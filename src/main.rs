@@ -7,10 +7,13 @@ use std::path::{Path, PathBuf};
 use std::{env, io};
 use structopt::StructOpt;
 
+/// Update manifest.json and layout.json
 #[derive(Clone, Debug, StructOpt)]
 struct Opt {
+    /// The path to your package. Defaults to your current directory
     path: Option<PathBuf>,
 
+    /// Set this flag to overwrite existing manifest and layout files. Defaults to stdout
     #[structopt(short, long)]
     force: bool,
 }
