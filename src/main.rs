@@ -46,20 +46,22 @@ fn read_manifest_and_layout(path: &Path) -> io::Result<(Manifest, Layout)> {
     Ok((manifest, layout))
 }
 
-fn walk_files(path: &Path) -> impl Iterator<Item = Content> {
-    walkdir::WalkDir::new(path).into_iter().filter_map(|entry| {
-        let entry = entry.ok()?;
-        let meta = entry.metadata().ok()?;
+fn walk_files<'a>(path: &'a Path) -> impl Iterator<Item = Content> + 'a {
+    walkdir::WalkDir::new(path)
+        .into_iter()
+        .filter_map(move |entry| {
+            let entry = entry.ok()?;
+            let meta = entry.metadata().ok()?;
 
-        if !meta.is_file()
-            || entry.path().ends_with("manifest.json")
-            || entry.path().ends_with("layout.json")
-        {
-            None
-        } else {
-            Some(Content::new(entry.into_path(), meta))
-        }
-    })
+            if !meta.is_file()
+                || entry.path().ends_with("manifest.json")
+                || entry.path().ends_with("layout.json")
+            {
+                None
+            } else {
+                Some(Content::new(path, entry.path(), meta))
+            }
+        })
 }
 
 fn write_package_metadata(path: &Path, manifest: &Manifest, layout: &Layout) -> io::Result<()> {

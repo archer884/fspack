@@ -1,7 +1,7 @@
 use chrono::TimeZone;
 use serde::{Deserialize, Serialize};
 use std::fs::Metadata;
-use std::path::PathBuf;
+use std::path::Path;
 
 type DateTime = chrono::DateTime<chrono::Utc>;
 
@@ -20,18 +20,20 @@ impl Layout {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Content {
-    path: PathBuf,
+    path: String,
     size: u64,
     date: i64,
 }
 
 impl Content {
-    pub fn new(path: impl Into<PathBuf>, meta: Metadata) -> Self {
+    pub fn new(base: &Path, path: &Path, meta: Metadata) -> Self {
         use std::time::SystemTime;
 
         let time = DateTime::from(meta.modified().unwrap_or_else(|_| SystemTime::now()));
+        let path = path.strip_prefix(base).unwrap_or(path);
+
         Self {
-            path: path.into(),
+            path: format_path(path),
             size: meta.len(),
             date: from_epoch(time),
         }
@@ -52,4 +54,9 @@ fn from_epoch(time: DateTime) -> i64 {
     let a = elapsed.num_seconds() as i64 * TICKS_PER_SECOND;
     let b = elapsed.num_nanoseconds().unwrap_or(0) as i64 / NANOS_PER_TICK;
     a + b
+}
+
+fn format_path(path: &Path) -> String {
+    let path = path.display().to_string();
+    path.replace("\\", "/")
 }
