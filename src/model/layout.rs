@@ -40,7 +40,7 @@ impl Content {
     }
 }
 
-// The number of seconds from the Windows filetime epoch.
+// The number of ticks from the Windows filetime epoch.
 // butwhy.gif
 // Because man is fallen, that's why.
 fn from_epoch(time: DateTime) -> i64 {
