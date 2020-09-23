@@ -52,6 +52,7 @@ fn read_manifest_and_layout(path: &Path) -> io::Result<(Manifest, Layout)> {
 fn walk_files<'a>(path: &'a Path) -> impl Iterator<Item = Content> + 'a {
     walkdir::WalkDir::new(path)
         .into_iter()
+        .filter_entry(|entry| entry.file_type().is_file() || !entry.path().ends_with(".git"))
         .filter_map(move |entry| {
             let entry = entry.ok()?;
             let meta = entry.metadata().ok()?;
