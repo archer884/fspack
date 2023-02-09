@@ -5,7 +5,7 @@ use std::path::Path;
 
 type DateTime = chrono::DateTime<chrono::Utc>;
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Layout {
     content: Vec<Content>,
 }

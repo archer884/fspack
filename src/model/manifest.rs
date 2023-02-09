@@ -10,14 +10,14 @@ pub struct Manifest {
     package_version: String,
     minimum_game_version: String,
     release_notes: Option<Notes>,
-    total_package_size: String,
+    // total_package_size: String,
 }
 
-impl Manifest {
-    pub fn set_total_package_size(&mut self, size: u64) {
-        self.total_package_size = format!("{size:020}");
-    }
-}
+// impl Manifest {
+//     pub fn set_total_package_size(&mut self, size: u64) {
+//         self.total_package_size = format!("{size:020}");
+//     }
+// }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Dependency {

@@ -41,8 +41,9 @@ fn main() {
 
 fn run(args: &Args) -> io::Result<()> {
     let path = args.path()?;
-    let (mut manifest, mut layout) = read_manifest_and_layout(&path)?;
-    manifest.set_total_package_size(layout.set_content(walk_files(&path)));
+    let (manifest, mut layout) = read_manifest_and_layout(&path)?;
+    layout.set_content(walk_files(&path));
+    // manifest.set_total_package_size(layout.set_content(walk_files(&path)));
 
     if args.force {
         write_package_metadata(&path, &manifest, &layout)?;
@@ -55,7 +56,14 @@ fn run(args: &Args) -> io::Result<()> {
 
 fn read_manifest_and_layout(path: &Path) -> io::Result<(Manifest, Layout)> {
     let manifest = serde_json::from_reader(File::open(path.join("manifest.json"))?)?;
-    let layout = serde_json::from_reader(File::open(path.join("layout.json"))?)?;
+    
+    let layout = path.join("layout.json");
+    let layout = if layout.exists() {
+        serde_json::from_reader(File::open(path.join("layout.json"))?)?
+    } else {
+        Layout::default()
+    };
+    
     Ok((manifest, layout))
 }
 
