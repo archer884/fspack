@@ -15,7 +15,7 @@ pub struct Manifest {
 
 impl Manifest {
     pub fn set_total_package_size(&mut self, size: u64) {
-        self.total_package_size = format!("{:020}", size);
+        self.total_package_size = format!("{size:020}");
     }
 }
 

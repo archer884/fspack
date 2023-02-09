@@ -1,15 +1,15 @@
 [package]
 name = "fspack"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["J/A <archer884@gmail.com>"]
-edition = "2018"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde = { version = "1.0.115", features = ["derive"] }
-serde_json = "1.0.57"
-structopt = "0.3.17"
-filetime = "0.2.12"
-walkdir = "2.3.1"
-chrono = "0.4.15"
+chrono = "0.4.23"
+clap = { version = "4.1.4", features = ["wrap_help", "derive"] }
+filetime = "0.2.20"
+serde = { version = "1.0.152", features = ["derive"] }
+serde_json = "1.0.93"
+walkdir = "2.3.2"

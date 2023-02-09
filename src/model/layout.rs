@@ -48,15 +48,15 @@ fn from_epoch(time: DateTime) -> i64 {
     const NANOS_PER_TICK: i64 = 100;
 
     // You only WISH this could be a constant.
-    let epoch = chrono::Utc.ymd(1601, 1, 1).and_hms(0, 0, 0);
+    let epoch = chrono::Utc.with_ymd_and_hms(1601, 1, 1, 0, 0, 0).unwrap();
 
     let elapsed = time.signed_duration_since(epoch);
-    let a = elapsed.num_seconds() as i64 * TICKS_PER_SECOND;
-    let b = elapsed.num_nanoseconds().unwrap_or(0) as i64 / NANOS_PER_TICK;
+    let a = elapsed.num_seconds() * TICKS_PER_SECOND;
+    let b = elapsed.num_nanoseconds().unwrap_or(0) / NANOS_PER_TICK;
     a + b
 }
 
 fn format_path(path: &Path) -> String {
     let path = path.display().to_string();
-    path.replace("\\", "/")
+    path.replace('\\', "/")
 }
