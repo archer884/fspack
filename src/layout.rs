@@ -11,10 +11,14 @@ pub struct Layout {
 }
 
 impl Layout {
-    pub fn set_content(&mut self, files: impl IntoIterator<Item = Content>) -> u64 {
-        let mut len = 0;
-        self.content = files.into_iter().inspect(|x| len += x.size).collect();
-        len
+    pub fn new(content: impl IntoIterator<Item = Content>) -> Self {
+        Self {
+            content: content.into_iter().collect(),
+        }
+    }
+
+    pub fn package_size(&self) -> u64 {
+        self.content.iter().map(|x| x.size).sum()
     }
 }
 
@@ -47,8 +51,8 @@ fn from_epoch(time: DateTime) -> i64 {
     const TICKS_PER_SECOND: i64 = 10_000_000;
     const NANOS_PER_TICK: i64 = 100;
 
-    // You only WISH this could be a constant.
-    let epoch = chrono::Utc.with_ymd_and_hms(1601, 1, 1, 0, 0, 0).unwrap();
+    // You only WISH this were a constant.
+    let epoch = chrono::Utc.with_ymd_and_hms(1, 1, 1, 1, 1, 1).unwrap();
 
     let elapsed = time.signed_duration_since(epoch);
     let a = elapsed.num_seconds() * TICKS_PER_SECOND;

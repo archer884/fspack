@@ -7,10 +7,10 @@ use std::{
     process,
 };
 
-mod model;
+mod layout;
 
 use clap::Parser;
-use model::{Content, Layout, Manifest};
+use layout::{Content, Layout};
 
 /// Update manifest.json and layout.json
 #[derive(Debug, Parser)]
@@ -18,9 +18,21 @@ struct Args {
     /// The path to your package. Defaults to your current directory
     path: Option<PathBuf>,
 
-    /// Set this flag to overwrite existing manifest and layout files. Defaults to stdout
+    /// print package size
+    ///
+    /// In the original version of these packages, there was a member in the
+    /// package manifest that contained the total size for the files in the
+    /// package. This appears to no longer be necessary, but in the vent you
+    /// need to update that value, this will print the appropriate size.
     #[arg(short, long)]
-    force: bool,
+    size: bool,
+
+    /// write layout changes
+    ///
+    /// By default, we just print the new layout file to stdout, but you can
+    /// pass this flag to have us overwrite the file directly.
+    #[arg(short, long)]
+    layout: bool,
 }
 
 impl Args {
@@ -41,30 +53,19 @@ fn main() {
 
 fn run(args: &Args) -> io::Result<()> {
     let path = args.path()?;
-    let (manifest, mut layout) = read_manifest_and_layout(&path)?;
-    layout.set_content(walk_files(&path));
-    // manifest.set_total_package_size(layout.set_content(walk_files(&path)));
+    let layout = Layout::new(walk_files(&path));
 
-    if args.force {
-        write_package_metadata(&path, &manifest, &layout)?;
-    } else {
-        print_package_metadata(&manifest, &layout)?;
+    if args.size {
+        let size = layout.package_size();
+        println!("{size}");
+        return Ok(());
     }
 
-    Ok(())
-}
-
-fn read_manifest_and_layout(path: &Path) -> io::Result<(Manifest, Layout)> {
-    let manifest = serde_json::from_reader(File::open(path.join("manifest.json"))?)?;
-    
-    let layout = path.join("layout.json");
-    let layout = if layout.exists() {
-        serde_json::from_reader(File::open(path.join("layout.json"))?)?
+    if args.layout {
+        write_package_metadata(&path, &layout)
     } else {
-        Layout::default()
-    };
-    
-    Ok((manifest, layout))
+        print_package_metadata(&layout)
+    }
 }
 
 fn walk_files(path: &Path) -> impl Iterator<Item = Content> + '_ {
@@ -86,18 +87,13 @@ fn walk_files(path: &Path) -> impl Iterator<Item = Content> + '_ {
         })
 }
 
-fn write_package_metadata(path: &Path, manifest: &Manifest, layout: &Layout) -> io::Result<()> {
-    serde_json::to_writer_pretty(&mut File::create(path.join("manifest.json"))?, manifest)?;
+fn write_package_metadata(path: &Path, layout: &Layout) -> io::Result<()> {
     serde_json::to_writer_pretty(&mut File::create(path.join("layout.json"))?, layout)?;
     Ok(())
 }
 
-fn print_package_metadata(manifest: &Manifest, layout: &Layout) -> io::Result<()> {
-    let manifest = serde_json::to_string_pretty(&manifest)?;
+fn print_package_metadata(layout: &Layout) -> io::Result<()> {
     let layout = serde_json::to_string_pretty(&layout)?;
-
-    println!("Manifest:\n{manifest}");
-    println!("Layout:\n{layout}");
-
+    println!("{layout}");
     Ok(())
 }
