@@ -4,19 +4,23 @@ Use this program to automatically update `manifest.json` and `layout.json` files
 
 ```shell
 $ fspack --help
-fspack 0.1.0
-Update manifest.json and layout.json
+  [PATH]
+          The path to your package. Defaults to your current directory
 
-USAGE:
-    fspack.exe [FLAGS] [path]
+Options:
+  -s, --size
+          print package size
 
-FLAGS:
-    -f, --force      Set this flag to overwrite existing manifest and layout files. Defaults to stdout
-    -h, --help       Prints help information
-    -V, --version    Prints version information
+          In the original version of these packages, there was a member in the package manifest that contained the total size for the files in the       
+          package. This appears to no longer be necessary, but in the vent you need to update that value, this will print the appropriate size.
 
-ARGS:
-    <path>    The path to your package. Defaults to your current directory
+  -l, --layout
+          write layout changes
+
+          By default, we just print the new layout file to stdout, but you can pass this flag to have us overwrite the file directly.
+
+  -h, --help
+          Print help (see a summary with '-h')
 ```
 
 To try the program without overwriting your files, just run the following command:
@@ -25,8 +29,8 @@ To try the program without overwriting your files, just run the following comman
 $ fspack <path to your package>
 ```
 
-To update your package manifest and layout, use the same command with the `-f` flag.
+To update your package layout, use the same command with the `--layout` flag.
 
 ```shell
-$ fspack <path to your package> -f
+$ fspack <path to your package> --layout
 ```
